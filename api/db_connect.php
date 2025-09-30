@@ -11,7 +11,7 @@ ini_set('display_errors', 1);
 $host = 'sql12.freesqldatabase.com';
 $dbname = 'sql12800063';
 $user = 'sql12800063';
-$pass = 'YOUR_NEW_PASSWORD_HERE'; // ⚠️ IMPORTANT: Use your new password!
+$pass = 'qQuqQzkiUw'; // ⚠️ IMPORTANT: Use your new password!
 $port = 3306;
 
 // Create a new database connection object
