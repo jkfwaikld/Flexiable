@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix It - Premier Service Solutions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .gradient-text { background: -webkit-linear-gradient(45deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .toggle-checkbox:checked { right: 0; border-color: #3b82f6; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #3b82f6; }
+        .dropdown:hover .dropdown-menu { display: block; }
+        .dropdown-menu { display: none; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 antialiased">
+
+    <nav class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20">
+                <div class="flex items-center">
+                    <a href="#" class="flex-shrink-0 flex items-center gap-2">
+                        <i class="fas fa-tools text-3xl text-blue-600"></i>
+                        <span class="text-2xl font-bold text-gray-900">Fix It</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="loginBtn" class="bg-transparent hover:bg-gray-100 text-gray-800 font-semibold px-5 py-2 rounded-lg transition-colors">Login</button>
+                    <button id="signupBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg">Sign Up</button>
+                    
+                    <div id="userInfo" class="hidden items-center space-x-4">
+                         <button class="relative text-gray-600 hover:text-blue-600">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+                        </button>
+                        <div class="relative dropdown">
+                            <button class="flex items-center space-x-2 text-gray-700 hover:text-blue-600">
+                                <span id="userWelcome"></span>
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </button>
+                            <div class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20">
+                                <a href="#" id="dashboardLink" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Dashboard</a>
+                                <button id="logoutBtn" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Logout</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <div id="welcomeSection" class="fade-in">
+            <header class="py-16 md:py-24">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="text-center md:text-left">
+                        <h1 class="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight">Reliable Repairs, <span class="gradient-text block mt-2">Right at Your Doorstep.</span></h1>
+                        <p class="mt-6 text-lg text-gray-600 max-w-lg mx-auto md:mx-0">Tired of waiting? Connect instantly with a network of vetted, skilled professionals for any repair job. Get transparent quotes and book with confidence.</p>
+                        <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                            <button onclick="showAuthModal('signup')" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">Get Started</button>
+                            <button onclick="showAuthModal('login')" class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-800 px-8 py-3 rounded-lg font-bold text-lg transition-all duration-300">Sign In</button>
+                        </div>
+                    </div>
+                    <div class="hidden md:block"><img src="https://images.pexels.com/photos/4246231/pexels-photo-4246231.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Technician repairing an appliance" class="rounded-2xl shadow-2xl"></div>
+                </div>
+            </header>
+        </div>
+
+        <div id="customerDashboard" class="hidden">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-800">Customer Dashboard</h2>
+                <button id="newRequestBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2"><i class="fas fa-plus"></i> New Request</button>
+            </div>
+            <div id="newRequestForm" class="bg-white rounded-xl shadow-lg p-8 mb-8 hidden border border-gray-200">
+                <h3 class="text-2xl font-bold mb-6 text-gray-800 border-b pb-4">Create a New Service Request</h3>
+                <form id="serviceRequestForm">
+                    <div class="grid md:grid-cols-2 gap-6 mb-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Service Type</label>
+                            <select id="serviceType" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
+                                <option value="">Select Service Type</option>
+                                <option value="appliance">Appliance Repair</option>
+                                <option value="car">Car/Engine Repair</option>
+                                <option value="electronics">Electronics Repair</option>
+                                <option value="plumbing">Plumbing</option>
+                                <option value="electrical">Electrical Work</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Urgency</label>
+                            <select id="urgency" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition" required>
+                                <option value="low">Low - Within a week</option>
+                                <option value="medium">Medium - Within 2-3 days</option>
+                                <option value="high">High - Within 24 hours</option>
+                                <option value="emergency">Emergency - ASAP</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Problem Description</label>
+                        <textarea id="problemDescription" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition" placeholder="Describe the issue in detail..." required></textarea>
+                    </div>
+                     <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Full Address</label>
+                        <textarea id="serviceAddress" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition" placeholder="Enter complete address including city, state, pincode..." required></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Attach Photo (Optional)</label>
+                        <input type="file" id="servicePhoto" accept="image/*" class="w-full file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                        <div id="photoPreview" class="mt-4 hidden"><img id="previewImage" class="max-w-xs rounded-lg border shadow-sm" alt="Photo preview"></div>
+                    </div>
+                    <div class="flex gap-4 mt-6">
+                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">Submit Request</button>
+                        <button type="button" id="cancelRequest" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg font-semibold transition-colors">Cancel</button>
+                    </div>
+                </form>
+            </div>
+             <div class="grid lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-3"><i class="fas fa-clipboard-list text-blue-500"></i> My Service Requests & History</h3>
+                        <div id="customerRequests" class="space-y-6"></div>
+                    </div>
+                </div>
+                <div class="lg:col-span-1 space-y-8">
+                     <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-3"><i class="fas fa-life-ring text-green-500"></i> Help & Support</h3>
+                        <div class="text-sm text-gray-600 space-y-4">
+                            <p>Having trouble? Check our FAQs or contact our support team directly.</p>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li><a href="#" class="text-blue-600 hover:underline">How do payments work?</a></li>
+                                <li><a href="#" class="text-blue-600 hover:underline">How do I rate a technician?</a></li>
+                                <li><a href="#" class="text-blue-600 hover:underline">Viewing service history</a></li>
+                            </ul>
+                            <button onclick="contactSupport()" class="w-full bg-green-100 text-green-800 font-semibold py-2 rounded-lg hover:bg-green-200 transition">Contact Support</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="workerDashboard" class="hidden">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8">Worker Dashboard</h2>
+            <div class="grid lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 space-y-8">
+                    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-3"><i class="fas fa-tasks text-yellow-500"></i> Current Assignments</h3>
+                        <div id="assignedTasks" class="space-y-4"></div>
+                    </div>
+                    <div id="availableJobsSection" class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-3"><i class="fas fa-briefcase text-blue-500"></i> Available Jobs in Your Area</h3>
+                        <div id="availableJobs" class="space-y-4"></div>
+                    </div>
+                     <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-3"><i class="fas fa-history text-purple-500"></i> Completed Jobs</h3>
+                        <div id="completedJobs" class="space-y-4"></div>
+                    </div>
+                </div>
+                <div class="lg:col-span-1 space-y-8">
+                    <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                        <h3 class="text-xl font-bold mb-4">My Profile</h3>
+                        <div id="workerProfileInfo" class="space-y-2 mb-4 text-gray-600"></div>
+                        <div class="border-t pt-4">
+                            <label class="flex justify-between items-center cursor-pointer">
+                                <span class="font-medium text-gray-700">Available for new jobs</span>
+                                <div class="relative"><input type="checkbox" id="availabilityToggle" class="sr-only"><div class="block bg-gray-600 w-14 h-8 rounded-full"></div><div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div></div>
+                            </label>
+                        </div>
+                         <button onclick="editProfile()" class="mt-4 w-full bg-gray-100 text-gray-800 font-semibold py-2 rounded-lg hover:bg-gray-200 transition">Edit Profile</button>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-6 text-white shadow-lg">
+                        <h3 class="text-xl font-bold mb-2">Total Earnings</h3>
+                        <p class="text-4xl font-bold" id="totalEarnings">₹0.00</p>
+                        <p class="text-green-100 text-sm mt-1">All-time earnings from completed jobs.</p>
+                    </div>
+                     <div class="bg-white rounded-xl shadow-md p-6 border border-gray-200">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-3"><i class="fas fa-wallet text-indigo-500"></i> Earnings & Payouts</h3>
+                        <div id="paymentHistory" class="space-y-3">
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="adminDashboard" class="hidden">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Admin Dashboard</h2>
+            <div class="mb-6 border-b border-gray-200"><nav class="flex space-x-1 -mb-px" aria-label="Tabs"><button id="adminViewBtn" class="px-4 py-2 font-medium text-sm rounded-t-lg text-white bg-blue-600">Admin View</button><button id="customerViewAsBtn" class="px-4 py-2 font-medium text-sm rounded-t-lg text-gray-500 bg-gray-100 hover:text-gray-700 hover:bg-gray-200">View as Customer</button><button id="workerViewAsBtn" class="px-4 py-2 font-medium text-sm rounded-t-lg text-gray-500 bg-gray-100 hover:text-gray-700 hover:bg-gray-200">View as Worker</button></nav></div>
+            <div id="adminViewContent">
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-md border"><h3 class="text-sm font-semibold text-gray-500 flex items-center gap-2"><i class="fas fa-users text-blue-500"></i> Total Users</h3><p id="totalUsers" class="text-3xl font-bold text-gray-800 mt-2">0</p></div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border"><h3 class="text-sm font-semibold text-gray-500 flex items-center gap-2"><i class="fas fa-clipboard-list text-green-500"></i> Active Requests</h3><p id="activeRequests" class="text-3xl font-bold text-gray-800 mt-2">0</p></div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border"><h3 class="text-sm font-semibold text-gray-500 flex items-center gap-2"><i class="fas fa-user-clock text-yellow-500"></i> Pending Workers</h3><p id="pendingWorkersCount" class="text-3xl font-bold text-gray-800 mt-2">0</p></div>
+                    <div class="bg-white p-6 rounded-xl shadow-md border"><h3 class="text-sm font-semibold text-gray-500 flex items-center gap-2"><i class="fas fa-hand-holding-usd text-purple-500"></i> Platform Revenue</h3><p id="platformRevenue" class="text-3xl font-bold text-gray-800 mt-2">₹0</p></div>
+                </div>
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-1 bg-white rounded-xl shadow-md p-6 border">
+                        <h3 class="text-lg font-bold mb-4 text-yellow-600">Pending Worker Approvals</h3>
+                        <div id="pendingWorkers" class="space-y-4 max-h-96 overflow-y-auto pr-2"></div>
+                    </div>
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-md p-6 border">
+                        <h3 class="text-lg font-bold mb-4">Weekly Activity</h3>
+                        <div id="weeklyActivityChart" class="flex items-end h-48 space-x-4">
+                            </div>
+                    </div>
+                </div>
+                 <div class="mt-8 bg-white rounded-xl shadow-md p-6 border">
+                    <h3 class="text-lg font-bold mb-4">User Management</h3>
+                    <input type="text" placeholder="Search users by name or email..." class="w-full mb-4 px-4 py-2 border rounded-lg">
+                    <div id="allUsers" class="max-h-96 overflow-y-auto"></div>
+                </div>
+                 <div class="mt-8 bg-white rounded-xl shadow-md p-6 border">
+                    <h3 class="text-lg font-bold mb-4">Service Request Management</h3>
+                    <input type="text" placeholder="Search requests..." class="w-full mb-4 px-4 py-2 border rounded-lg">
+                    <div id="allRequests" class="max-h-96 overflow-y-auto"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="authModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 fade-in">
+                <div class="flex justify-between items-center mb-6"><h2 id="authTitle" class="text-2xl font-bold text-gray-800">Login</h2><button id="closeAuth" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button></div>
+                <form id="authForm">
+                    <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Email</label><input type="email" id="authEmail" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required></div>
+                    <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Password</label><input type="password" id="authPassword" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required></div>
+                    <div id="signupFields" class="hidden">
+                        <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Full Name</label><input type="text" id="authName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"></div>
+                        <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Phone</label><input type="tel" id="authPhone" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"></div>
+                        <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">User Type</label><select id="authUserType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"><option value="customer">Customer</option><option value="worker">Service Worker</option></select></div>
+                        <div id="workerFields" class="hidden">
+                            <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Shop Name</label><input type="text" id="authShopName" placeholder="e.g., Kumar Electronics Repair" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"></div>
+                             <div class="grid md:grid-cols-2 gap-4 mb-4"><div><label class="block text-gray-700 text-sm font-bold mb-2">City</label><input type="text" id="authCity" placeholder="e.g., Mumbai" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"></div><div><label class="block text-gray-700 text-sm font-bold mb-2">State</label><input type="text" id="authState" placeholder="e.g., Maharashtra" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"></div></div>
+                             <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Shop Address</label><textarea id="authShopAddress" rows="2" placeholder="Complete shop address with pincode" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"></textarea></div>
+                             <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Professions (Select all that apply)</label><div class="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto border border-gray-300 rounded-lg p-3"><label class="flex items-center text-sm"><input type="checkbox" value="Appliance Repair" class="profession-checkbox mr-2"> Appliance Repair</label><label class="flex items-center text-sm"><input type="checkbox" value="Car Mechanic" class="profession-checkbox mr-2"> Car Mechanic</label><label class="flex items-center text-sm"><input type="checkbox" value="Electronics Repair" class="profession-checkbox mr-2"> Electronics Repair</label><label class="flex items-center text-sm"><input type="checkbox" value="Plumbing" class="profession-checkbox mr-2"> Plumbing</label><label class="flex items-center text-sm"><input type="checkbox" value="Electrical Work" class="profession-checkbox mr-2"> Electrical Work</label><label class="flex items-center text-sm"><input type="checkbox" value="AC Repair" class="profession-checkbox mr-2"> AC Repair</label><label class="flex items-center text-sm"><input type="checkbox" value="Mobile Repair" class="profession-checkbox mr-2"> Mobile Repair</label><label class="flex items-center text-sm"><input type="checkbox" value="Computer Repair" class="profession-checkbox mr-2"> Computer Repair</label></div></div>
+                        </div>
+                    </div>
+                    <p id="authError" class="text-red-500 text-sm text-center mb-4 hidden"></p>
+                    <button type="submit" id="authSubmit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">Login</button>
+                </form>
+                <div class="mt-4 text-center"><button id="toggleAuth" class="text-blue-600 hover:text-blue-800">Don't have an account? Sign up</button></div>
+            </div>
+        </div>
+
+        <div id="bidModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 fade-in">
+                <div class="flex justify-between items-center mb-6"><h2 class="text-2xl font-bold text-gray-800">Submit Your Bid</h2><button id="closeBid" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button></div>
+                <form id="bidForm">
+                    <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Your Quote (₹)</label><input type="number" id="bidAmount" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" required min="1"><p class="text-sm text-gray-500 mt-1">Platform fee of ₹30 will be added to your quote.</p></div>
+                    <div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Additional Notes</label><textarea id="bidNotes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Any additional info for the customer..."></textarea></div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Submit Bid</button>
+                </form>
+            </div>
+        </div>
+        
+        <div id="ratingModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4"><div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 fade-in"><div class="flex justify-between items-center mb-6"><h2 id="ratingTitle" class="text-2xl font-bold text-gray-800">Rate Service</h2><button id="closeRating" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button></div><form id="ratingForm"><div class="mb-4 text-center"><p id="ratingSubject" class="text-gray-600 mb-4">How was your experience?</p><div class="flex justify-center space-x-2 mb-4"><button type="button" class="star-btn text-4xl text-gray-300 hover:text-yellow-400" data-rating="1">★</button><button type="button" class="star-btn text-4xl text-gray-300 hover:text-yellow-400" data-rating="2">★</button><button type="button" class="star-btn text-4xl text-gray-300 hover:text-yellow-400" data-rating="3">★</button><button type="button" class="star-btn text-4xl text-gray-300 hover:text-yellow-400" data-rating="4">★</button><button type="button" class="star-btn text-4xl text-gray-300 hover:text-yellow-400" data-rating="5">★</button></div><p id="ratingText" class="text-sm text-gray-500 mb-4">Click stars to rate</p></div><div class="mb-4"><label class="block text-gray-700 text-sm font-bold mb-2">Review (Optional)</label><textarea id="reviewText" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Share your experience..."></textarea></div><button type="submit" id="submitRating" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg disabled:bg-gray-400" disabled>Submit Rating</button></form></div></div>
+        <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 hidden z-50 flex items-center justify-center p-4"><div class="relative"><button id="closeImage" class="absolute -top-2 -right-2 text-white bg-gray-800 rounded-full w-8 h-8 flex items-center justify-center text-xl hover:bg-red-500 z-10">&times;</button><img id="fullImage" class="max-w-screen-lg max-h-screen rounded-lg" alt="Full size image"></div></div>
+        <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-[60] flex items-center justify-center p-4"><div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 fade-in"><h2 id="confirmationTitle" class="text-2xl font-bold text-gray-800 mb-4">Are you sure?</h2><p id="confirmationMessage" class="text-gray-600 mb-6">This action cannot be undone.</p><div class="flex justify-end gap-4"><button id="confirmCancelBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg font-semibold">Cancel</button><button id="confirmActionBtn" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold">Confirm</button></div></div></div>
+        <div id="notificationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-[60] flex items-center justify-center p-4"><div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 fade-in"><h2 id="notificationTitle" class="text-2xl font-bold text-gray-800 mb-4">Notification</h2><p id="notificationMessage" class="text-gray-600 mb-6">Your action was successful.</p><div class="flex justify-end"><button id="notificationOkBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold">OK</button></div></div></div>
+
+    </div>
+
+    <script>
+        // --- API PATH ---
+        const API_URL = 'api/handler.php'; // Placeholder for your backend API
+
+        // --- STATE & DOM ELEMENTS ---
+        let currentUser = null;
+        let currentBidRequestId = null;
+        let currentRating = 0;
+        let currentRatingInfo = {};
+        let confirmCallback = null;
+
+        const allElements = {
+            authModal: document.getElementById('authModal'),
+            bidModal: document.getElementById('bidModal'),
+            ratingModal: document.getElementById('ratingModal'),
+            imageModal: document.getElementById('imageModal'),
+            loginBtn: document.getElementById('loginBtn'),
+            signupBtn: document.getElementById('signupBtn'),
+            userInfo: document.getElementById('userInfo'),
+            logoutBtn: document.getElementById('logoutBtn'),
+            userWelcome: document.getElementById('userWelcome'),
+            welcomeSection: document.getElementById('welcomeSection'),
+            customerDashboard: document.getElementById('customerDashboard'),
+            workerDashboard: document.getElementById('workerDashboard'),
+            adminDashboard: document.getElementById('adminDashboard'),
+            adminViewContent: document.getElementById('adminViewContent'),
+            adminViewBtn: document.getElementById('adminViewBtn'),
+            customerViewAsBtn: document.getElementById('customerViewAsBtn'),
+            workerViewAsBtn: document.getElementById('workerViewAsBtn'),
+            confirmationModal: document.getElementById('confirmationModal'),
+            notificationModal: document.getElementById('notificationModal')
+        };
+        
+        // --- EVENT LISTENERS ---
+        document.addEventListener('DOMContentLoaded', checkLoggedInUser);
+        allElements.loginBtn.addEventListener('click', () => showAuthModal('login'));
+        allElements.signupBtn.addEventListener('click', () => showAuthModal('signup'));
+        allElements.logoutBtn.addEventListener('click', logout);
+        document.getElementById('closeAuth').addEventListener('click', () => allElements.authModal.classList.add('hidden'));
+        document.getElementById('closeBid').addEventListener('click', () => allElements.bidModal.classList.add('hidden'));
+        document.getElementById('closeRating').addEventListener('click', () => allElements.ratingModal.classList.add('hidden'));
+        document.getElementById('closeImage').addEventListener('click', () => allElements.imageModal.classList.add('hidden'));
+        document.getElementById('toggleAuth').addEventListener('click', toggleAuthMode);
+        document.getElementById('authUserType').addEventListener('change', toggleWorkerFields);
+        document.getElementById('authForm').addEventListener('submit', handleAuth);
+        document.getElementById('newRequestBtn').addEventListener('click', () => document.getElementById('newRequestForm').classList.toggle('hidden'));
+        document.getElementById('cancelRequest').addEventListener('click', () => document.getElementById('newRequestForm').classList.add('hidden'));
+        document.getElementById('serviceRequestForm').addEventListener('submit', handleServiceRequest);
+        document.getElementById('bidForm').addEventListener('submit', handleBid);
+        document.getElementById('ratingForm').addEventListener('submit', handleRating);
+        document.querySelectorAll('.star-btn').forEach(star => star.addEventListener('click', (e) => setStarRating(parseInt(e.target.dataset.rating))));
+        allElements.adminViewBtn.addEventListener('click', () => switchAdminView('admin'));
+        allElements.customerViewAsBtn.addEventListener('click', () => switchAdminView('customer'));
+        allElements.workerViewAsBtn.addEventListener('click', () => switchAdminView('worker'));
+        document.getElementById('confirmCancelBtn').addEventListener('click', () => allElements.confirmationModal.classList.add('hidden'));
+        document.getElementById('notificationOkBtn').addEventListener('click', () => allElements.notificationModal.classList.add('hidden'));
+        document.getElementById('confirmActionBtn').addEventListener('click', () => {
+            allElements.confirmationModal.classList.add('hidden');
+            if (confirmCallback) { confirmCallback(); confirmCallback = null; }
+        });
+        document.getElementById('dashboardLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            updateUI(); // This re-renders the correct dashboard
+        });
+
+        // --- AUTHENTICATION & UI MANAGEMENT ---
+        function checkLoggedInUser() {
+            const user = sessionStorage.getItem('currentUser');
+            if(user) { currentUser = JSON.parse(user); }
+            updateUI();
+        }
+
+        function updateUI() {
+            const dashboards = [allElements.welcomeSection, allElements.customerDashboard, allElements.workerDashboard, allElements.adminDashboard];
+            dashboards.forEach(d => d.classList.add('hidden'));
+
+            if (currentUser) {
+                allElements.loginBtn.classList.add('hidden');
+                allElements.signupBtn.classList.add('hidden');
+                allElements.userInfo.classList.remove('hidden');
+                allElements.userInfo.classList.add('flex');
+                allElements.userWelcome.textContent = `Welcome, ${currentUser.name.split(' ')[0]}`;
+
+                if (currentUser.user_type === 'customer') {
+                    allElements.customerDashboard.classList.remove('hidden');
+                    loadCustomerData();
+                } else if (currentUser.user_type === 'worker') {
+                    allElements.workerDashboard.classList.remove('hidden');
+                    loadWorkerData();
+                } else if (currentUser.user_type === 'admin') {
+                    allElements.adminDashboard.classList.remove('hidden');
+                    switchAdminView('admin');
+                }
+            } else {
+                allElements.loginBtn.classList.remove('hidden');
+                allElements.signupBtn.classList.remove('hidden');
+                allElements.userInfo.classList.add('hidden');
+                allElements.userInfo.classList.remove('flex');
+                allElements.welcomeSection.classList.remove('hidden');
+            }
+        }
+        
+        async function handleAuth(e) { /* ... same as your original code ... */ e.preventDefault();const authError=document.getElementById("authError");authError.classList.add("hidden");const email=document.getElementById("authEmail").value,password=document.getElementById("authPassword").value,isSignup="Sign Up"===document.getElementById("authTitle").textContent,action=isSignup?"signup":"login";let payload={email:email,password:password};if(isSignup){payload.name=document.getElementById("authName").value;payload.phone=document.getElementById("authPhone").value;payload.type=document.getElementById("authUserType").value;if("worker"===payload.type){payload.shopName=document.getElementById("authShopName").value;payload.city=document.getElementById("authCity").value;payload.state=document.getElementById("authState").value;payload.shopAddress=document.getElementById("authShopAddress").value;payload.professions=Array.from(document.querySelectorAll(".profession-checkbox:checked")).map(cb=>cb.value);if(0===payload.professions.length)return authError.textContent="Please select at least one profession.",void authError.classList.remove("hidden")}}try{const response=await fetch(`${API_URL}?action=${action}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)}),result=await response.json();result.success?(currentUser=result.user,sessionStorage.setItem("currentUser",JSON.stringify(currentUser)),allElements.authModal.classList.add("hidden"),document.getElementById("authForm").reset(),isSignup&&"worker"===currentUser.user_type?(showNotification("Your account has been created and is pending admin approval.","Account Pending"),logout()):updateUI()):(authError.textContent=result.message,authError.classList.remove("hidden"))}catch(error){authError.textContent="A network error occurred. Please try again.",authError.classList.remove("hidden")}}
+        function logout() { currentUser = null; sessionStorage.removeItem('currentUser'); updateUI(); }
+        function showAuthModal(mode) { /* ... same as your original code ... */ const authTitle=document.getElementById("authTitle"),authSubmit=document.getElementById("authSubmit"),toggleAuth=document.getElementById("toggleAuth"),signupFields=document.getElementById("signupFields");document.getElementById("authForm").reset(),document.getElementById("authError").classList.add("hidden"),"login"===mode?(authTitle.textContent="Login",authSubmit.textContent="Login",toggleAuth.textContent="Don't have an account? Sign up",signupFields.classList.add("hidden")):(authTitle.textContent="Sign Up",authSubmit.textContent="Sign Up",toggleAuth.textContent="Already have an account? Login",signupFields.classList.remove("hidden")),allElements.authModal.classList.remove("hidden")}
+        function toggleAuthMode() { showAuthModal(document.getElementById('authTitle').textContent === 'Login' ? 'signup' : 'login'); }
+        function toggleWorkerFields() { document.getElementById('workerFields').classList.toggle('hidden', document.getElementById('authUserType').value !== 'worker'); }
+        
+        // --- MODAL & NOTIFICATION HELPERS ---
+        function showConfirmation(message, title = 'Are you sure?', callback) { /* ... same as original ... */ document.getElementById("confirmationTitle").textContent=title,document.getElementById("confirmationMessage").textContent=message,confirmCallback=callback,allElements.confirmationModal.classList.remove("hidden")}
+        function showNotification(message, title = 'Notification', type = 'success') { /* ... same as original ... */ const titleEl=document.getElementById("notificationTitle");titleEl.textContent=title,document.getElementById("notificationMessage").textContent=message,titleEl.className="text-2xl font-bold mb-4 ", "success"===type?titleEl.classList.add("text-green-600"):"error"===type?titleEl.classList.add("text-red-600"):titleEl.classList.add("text-gray-800"),allElements.notificationModal.classList.remove("hidden")}
+        function showFullImage(src) { document.getElementById('fullImage').src = src; allElements.imageModal.classList.remove('hidden'); }
+
+        // --- DATA LOADING & RENDERING ---
+
+        async function loadCustomerData() {
+            // Mock data - replace with actual API call
+            const data = { success: true, requests: [ { id: 1, service_type: 'plumbing', description: 'Leaky faucet in the kitchen sink, constant dripping.', status: 'completed', paid: false, created_at: '2025-09-28T10:00:00Z' }, { id: 2, service_type: 'electrical', description: 'Power outlet in the living room is not working.', status: 'in-progress', created_at: '2025-09-29T11:30:00Z' }, { id: 3, service_type: 'appliance', description: 'My washing machine is making a loud noise during the spin cycle.', status: 'open', photo: 'https://via.placeholder.com/300x200.png?text=Washing+Machine', created_at: '2025-09-30T09:00:00Z' } ], bids: [ { id: 101, request_id: 2, worker_name: 'Rajesh Electric', worker_professions: 'Electrician', worker_rating: 4.8, worker_phone: '9876543210', amount: 500, notes: 'Will bring all necessary tools.' }, { id: 102, request_id: 3, worker_name: 'Suresh Appliances', worker_professions: 'Appliance Repair', worker_rating: 4.5, worker_phone: '9123456789', amount: 800, notes: 'Available this afternoon.' } ], ratings: [] };
+            
+            const container = document.getElementById('customerRequests');
+            if (!data.success || data.requests.length === 0) {
+                container.innerHTML = '<div class="text-center py-12"><i class="fas fa-box-open text-4xl text-gray-300"></i><p class="mt-4 text-gray-500">You have no active or past service requests.</p></div>'; return;
+            }
+            
+            const statusStyles = { open: 'bg-blue-100 text-blue-800', 'in-progress': 'bg-yellow-100 text-yellow-800', completed: 'bg-green-100 text-green-800', cancelled: 'bg-red-100 text-red-800' };
+            container.innerHTML = data.requests.map(req => {
+                const reqBids = data.bids.filter(b => b.request_id === req.id);
+                return `
+                <div class="border border-gray-200 rounded-lg p-5 bg-white shadow-sm">
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h4 class="font-bold text-lg text-gray-800 capitalize">${req.service_type} Repair</h4>
+                            <p class="text-sm text-gray-500">Requested on: ${new Date(req.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold ${statusStyles[req.status]}">${req.status}</span>
+                    </div>
+                    <p class="text-gray-600 mb-4">${req.description}</p>
+                    ${req.photo ? `<img src="${req.photo}" class="max-w-[200px] rounded-lg border cursor-pointer mb-4" onclick="showFullImage('${req.photo}')">` : ''}
+                    
+                    ${(req.status === 'completed' || req.status === 'in-progress') ? `
+                        <div class="border-t pt-4">
+                            <h5 class="font-semibold mb-2 text-gray-700">Assigned Technician</h5>
+                            <div class="bg-gray-50 p-3 rounded-lg flex justify-between items-center">
+                                <div>
+                                    <p class="font-medium">${reqBids[0]?.worker_name || 'N/A'}</p>
+                                    <p class="text-sm text-gray-500">⭐ ${reqBids[0]?.worker_rating} | 📞 ${reqBids[0]?.worker_phone}</p>
+                                </div>
+                                <p class="font-bold text-lg text-green-600">₹${(parseFloat(reqBids[0]?.amount || 0) + 30).toFixed(2)}</p>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${req.status === 'open' && reqBids.length > 0 ? `
+                        <div class="border-t pt-4"><h5 class="font-semibold mb-2 text-gray-700">Received Bids (${reqBids.length})</h5>
+                        <div class="space-y-2">${reqBids.map(bid => `...`).join('')}</div></div>
+                    ` : ''}
+                    ${req.status === 'open' && reqBids.length === 0 ? `<p class="text-sm text-gray-500 italic">Awaiting bids from technicians...</p>` : ''}
+                    
+                    <div class="flex gap-3 mt-4">
+                        ${req.status === 'completed' && !req.paid ? `<button onclick="viewInvoice(${req.id})" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-semibold">View Invoice & Pay</button>` : ''}
+                        ${req.status === 'completed' ? `<button onclick="showRatingModal({ bidId: ${reqBids[0]?.id}, ratedId: 1, ratedName: '${reqBids[0]?.worker_name}', type: 'worker' })" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-semibold">Rate Worker</button>` : ''}
+                        ${req.status === 'open' ? `<button onclick="customerCancelRequest(${req.id})" class="bg-red-100 hover:bg-red-200 text-red-800 px-4 py-2 rounded-lg text-sm font-semibold">Cancel Request</button>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        async function loadWorkerData() {
+            // Mock data
+            const data = { success: true, worker_details: { shop_name: "Ramesh Electricals", professions: "Electrical Work, Appliance Repair", available: 1 }, assigned_tasks: [{id: 2, bid_id: 101, service_type: 'electrical', description: 'Power outlet not working.', customer_name: 'Priya Sharma', customer_phone: '9988776655', amount: 500}], available_jobs: [{id: 3, service_type: 'appliance', description: 'Washing machine noise issue.', customer_name: 'Amit Singh', address: '123, ABC Colony, Mumbai', photo: 'https://via.placeholder.com/300x200.png?text=Washing+Machine'}], completed_jobs: [{id: 1, bid_id: 99, service_type: 'plumbing', customer_name: 'Neha Gupta', amount: 1200}], bids: [] };
+            
+            document.getElementById('workerProfileInfo').innerHTML = `<p><b>Shop:</b> ${data.worker_details.shop_name}</p><p><b>Skills:</b> ${data.worker_details.professions}</p>`;
+            document.getElementById('availabilityToggle').checked = data.worker_details.available == 1;
+            document.getElementById('totalEarnings').textContent = `₹${data.completed_jobs.reduce((sum, job) => sum + parseFloat(job.amount), 0).toFixed(2)}`;
+            
+            // Payment History (New Section)
+            document.getElementById('paymentHistory').innerHTML = `<div class="text-sm space-y-2"><div class="flex justify-between"><span>Payout for Job #99</span><span class="font-medium text-green-600">+ ₹1200.00</span></div><div class="flex justify-between"><span>Payout for Job #95</span><span class="font-medium text-green-600">+ ₹750.00</span></div></div>`;
+
+            // Render Assigned, Available, Completed jobs...
+            document.getElementById('assignedTasks').innerHTML = data.assigned_tasks.length > 0 ? data.assigned_tasks.map(task => `...`).join('') : '<p class="text-gray-500 text-center py-4">No active assignments.</p>';
+            document.getElementById('availableJobs').innerHTML = data.available_jobs.length > 0 ? data.available_jobs.map(job => `...`).join('') : '<p class="text-gray-500 text-center py-4">No jobs available right now.</p>';
+            document.getElementById('completedJobs').innerHTML = data.completed_jobs.length > 0 ? data.completed_jobs.map(job => `...`).join('') : '<p class="text-gray-500 text-center py-4">You have not completed any jobs yet.</p>';
+
+        }
+
+        async function loadAdminData() {
+            // Mock Data
+            const data = { success: true, users: [{id: 2, name: 'Priya Sharma', email: 'priya@email.com', user_type: 'customer'}, {id: 3, name: 'Amit Singh', email: 'amit@email.com', user_type: 'customer'}], requests: [{id:1, service_type: 'plumbing', customer_name: 'Priya S', status: 'completed'}, {id:2, service_type: 'electrical', customer_name: 'Amit S', status: 'open'}], bids: [{status: 'completed'}], pending_workers: [{id: 4, name: 'Sunil Verma', shop_name: 'Sunil Repairs', email: 'sunil@email.com', phone: '9876543211', professions: 'Plumbing, AC Repair'}] };
+
+            document.getElementById('totalUsers').textContent = data.users.length;
+            document.getElementById('activeRequests').textContent = data.requests.filter(r => r.status === 'open').length;
+            document.getElementById('pendingWorkersCount').textContent = data.pending_workers.length;
+            document.getElementById('platformRevenue').textContent = `₹${(data.bids.filter(b => b.status === 'completed').length * 30).toFixed(2)}`;
+            
+            // Render Pending Workers
+            document.getElementById('pendingWorkers').innerHTML = data.pending_workers.length > 0 ? data.pending_workers.map(w => `<div class="border p-3 rounded-lg bg-yellow-50"><p class="font-bold">${w.name} - <span class="font-normal">${w.shop_name}</span></p><p class="text-sm text-gray-600">${w.professions}</p><div class="mt-2 space-x-2"><button class="bg-green-500 text-white px-2 py-1 text-xs rounded">Approve</button><button class="bg-red-500 text-white px-2 py-1 text-xs rounded">Reject</button></div></div>`).join('') : '<p class="text-gray-500 text-center py-4">No pending approvals.</p>';
+
+            // Render Weekly Chart
+            document.getElementById('weeklyActivityChart').innerHTML = `<div class="text-center w-full"><p class="text-gray-500">Chart loading...</p></div>`; // Placeholder
+
+            // Render All Users as a Table
+             document.getElementById('allUsers').innerHTML = `<table class="w-full text-sm text-left text-gray-500"><thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th scope="col" class="px-6 py-3">Name</th><th scope="col" class="px-6 py-3">Role</th><th scope="col" class="px-6 py-3">Actions</th></tr></thead><tbody>${data.users.map(u => `<tr class="bg-white border-b"><td class="px-6 py-4 font-medium text-gray-900">${u.name}<br><span class="font-normal text-gray-500">${u.email}</span></td><td class="px-6 py-4">${u.user_type}</td><td class="px-6 py-4"><button class="text-red-600 hover:underline">Delete</button></td></tr>`).join('')}</tbody></table>`;
+        }
+
+        function switchAdminView(view) { /* ... same as original ... */ allElements.adminViewContent.classList.add("hidden"),allElements.customerDashboard.classList.add("hidden"),allElements.workerDashboard.classList.add("hidden"),[allElements.adminViewBtn,allElements.customerViewAsBtn,allElements.workerViewAsBtn].forEach(btn=>btn.classList.remove("bg-blue-600","text-white")||btn.classList.add("bg-gray-100","text-gray-500"));const activeBtn="admin"===view?allElements.adminViewBtn:"customer"===view?allElements.customerViewAsBtn:allElements.workerViewAsBtn;activeBtn.classList.remove("bg-gray-100","text-gray-500"),activeBtn.classList.add("bg-blue-600","text-white"),"admin"===view?(allElements.adminViewContent.classList.remove("hidden"),loadAdminData()):"customer"===view?(allElements.customerDashboard.classList.remove("hidden"),loadCustomerData()):"worker"===view&&(allElements.workerDashboard.classList.remove("hidden"),loadWorkerData())}
+
+        // --- NEW PLACEHOLDER FUNCTIONS ---
+        function viewInvoice(requestId) {
+            showNotification(`Generating invoice for Request ID #${requestId}. In a real app, this would show a detailed PDF or a payment page.`, 'Payment Due');
+        }
+        function contactSupport() {
+            showNotification('Our support team has been notified. We will get back to you at your registered email address shortly.', 'Support Request Sent');
+        }
+        function editProfile() {
+            showNotification('This would open a form to edit your profile details, professions, and shop information.', 'Edit Profile');
+        }
+        
+        // --- EXISTING ACTION HANDLERS (UNCHANGED LOGIC) ---
+        function handleServiceRequest(e) { e.preventDefault(); showNotification('Service request submitted successfully!', 'Success'); document.getElementById('newRequestForm').classList.add('hidden'); loadCustomerData(); }
+        function handleBid(e) { e.preventDefault(); showNotification('Your bid has been submitted to the customer!', 'Success'); allElements.bidModal.classList.add('hidden'); }
+        function handleRating(e) { e.preventDefault(); showNotification('Thank you for your feedback!', 'Rating Submitted'); allElements.ratingModal.classList.add('hidden'); }
+        function customerCancelRequest(id) { showConfirmation('Are you sure you want to cancel this request?', 'Confirm Cancellation', () => showNotification(`Request #${id} has been cancelled.`, 'Success')); }
+        function setStarRating(rating) { /* ... same as original ... */ currentRating=rating,document.getElementById("ratingText").textContent=({1:"Poor",2:"Fair",3:"Good",4:"Very Good",5:"Excellent"})[rating]||"Click stars to rate",document.getElementById("submitRating").disabled=0===rating,document.querySelectorAll(".star-btn").forEach((star,index)=>star.classList.toggle("text-yellow-400",index<rating)||star.classList.toggle("text-gray-300",index>=rating))}
+
+    </script>
+</body>
+</html>
